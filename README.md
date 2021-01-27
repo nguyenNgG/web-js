@@ -1,2 +1,2 @@
 # web-js
-Front-end web application using Javascript
+Front-end web application using Javascript.
