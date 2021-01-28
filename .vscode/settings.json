@@ -1,3 +1,7 @@
 {
-    "prettier.singleQuote": true
+  "prettier.singleQuote": true,
+  "editor.rulers": [80, 120]
+  "workbench.colorCustomizations": {
+    "editorRuler.foreground": "#709ec9"
+}
 }
