@@ -3,9 +3,19 @@
   font-family: sans-serif;
 }
 
+.tblContainer {
+  text-align: center;
+}
+
 table {
   text-align: left;
   border-spacing: 1em;
+  table-layout: auto;
+  width: 100%;
+}
+
+select {
+  margin: 0.5em 0em 0.5em 0em;
 }
 
 .backdrop {
@@ -22,6 +32,10 @@ table {
 
 .backdrop.visible {
   display: block;
+}
+
+#header {
+  text-align: center;
 }
 
 .header {

@@ -1,6 +1,17 @@
 class Application {
   static init() {
-      const ci = new ComponentInterface();
+    const manip = new ManipulationInterface();
+    const header = new Header();
+    manip.createInterface();
+    header.connectInterfaceRender(manip, manip.renderInterface.bind(manip));
+  }
+}
+
+class DOMHelpers {
+  static clearEventListener(element) {
+    const clonedElement = element.cloneNode(true);
+    element.replaceWith(clonedElement);
+    return clonedElement;
   }
 }
 
@@ -17,10 +28,19 @@ class Button extends Component {
 }
 
 class Header extends Component {
+  _btnAdd;
+
   constructor() {
     super();
-    const btnAdd = new Button('button', 'Add');
-    document.querySelector('#header').append(btnAdd._btn);
+    this._btnAdd = new Button('button', 'Add');
+    document.querySelector('#header').append(this._btnAdd._btn);
+  }
+
+  connectInterfaceRender(manipInterface, manipInterfaceRenderFunction) {
+    this._btnAdd._btn.addEventListener(
+      'click',
+      manipInterfaceRenderFunction.bind(manipInterface)
+    );
   }
 }
 
@@ -28,38 +48,31 @@ class ManipulationInterface extends Component {
   createInterface() {
     const container = document.querySelector('.manipCont');
     const btnSubmit = new Button('submit', 'Submit');
-    const inputName = {
-      txtEmpName: 'Name',
-      txtEmpAge: 'Age',
-      txtEmpAddr: 'Address',
-      txtEmpExp: 'Experience',
-      txtEmpPhoneNum: 'Phone Number',
-      txtEmpEmail: 'Email',
-      txtEmpEmplDate: 'Employment Date',
-    };
     const head = document.createElement('p');
+    const ageSelector = document.querySelector('#txtEmpAge');
+    const expSelector = document.querySelector('#txtEmpExp');
+    for (let i = 18; i <= 60; i++) {
+      const ageOption = document.createElement('option');
+      ageOption.setAttribute('value', i);
+      ageOption.textContent = i;
+      ageSelector.append(ageOption);
+    }
+    for (let i = 0; i <= 2; i = i + 0.5) {
+      const expOption = document.createElement('option');
+      expOption.setAttribute('value', i);
+      expOption.textContent = i;
+      expSelector.append(expOption);
+    }
     head.textContent = 'Add employee';
     head.classList.toggle('header');
-    container.append(head);
-    for (const key in inputName) {
-      if (inputName.hasOwnProperty(key)) {
-        const label = document.createElement('label');
-        const input = document.createElement('input');
-        const br = document.createElement('br');
-        label.setAttribute('for', key);
-        label.textContent = `${inputName[key]}`;
-        input.setAttribute('type', 'text');
-        input.setAttribute('id', key);
-        input.setAttribute('name', key);
-        container.append(label, br, input);
-        container.innerHTML = container.innerHTML + '<br><br>';
-      }
-    }
+    container.insertAdjacentElement('afterbegin', head);
     container.append(btnSubmit._btn);
+    btnSubmit._btn.addEventListener('click', this.checkSubmit.bind(this));
   }
 
   renderInterface() {
-    const backdrop = document.querySelector('.backdrop');
+    let backdrop = document.querySelector('.backdrop');
+    backdrop = DOMHelpers.clearEventListener(backdrop);
     const container = document.querySelector('.manipCont');
     backdrop.classList.toggle('visible');
     container.classList.toggle('visible');
@@ -76,6 +89,12 @@ class ManipulationInterface extends Component {
     const container = document.querySelector('.manipCont');
     backdrop.classList.toggle('visible');
     container.classList.toggle('visible');
+  }
+
+  checkSubmit() {
+    const container = document.querySelector('.manipCont');
+    const userInputs = container.querySelectorAll('input');
+    
   }
 }
 
