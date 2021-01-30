@@ -15,7 +15,9 @@ class DOMHelpers {
   }
 }
 
-class Component {}
+class Component {
+  connectFunction() {}
+}
 
 class Button extends Component {
   _btn;
@@ -77,11 +79,7 @@ class ManipulationInterface extends Component {
     backdrop.classList.toggle('visible');
     container.classList.toggle('visible');
     backdrop.addEventListener('click', this.closeInterface.bind(this));
-    const x = window.innerWidth / 2 - container.clientWidth / 2;
-    const y = window.innerHeight / 2 - container.clientHeight / 2;
     container.style.position = 'absolute';
-    container.style.left = x + 'px';
-    container.style.top = y + 'px';
   }
 
   closeInterface() {
@@ -95,6 +93,7 @@ class ManipulationInterface extends Component {
     const container = document.querySelector('.manipCont');
     const userInputs = container.querySelectorAll('input');
     const userSelects = container.querySelectorAll('select');
+    const errorTexts = container.querySelectorAll('.txtError');
     const regexList = [
       /^[a-zA-Z]+(\s?[a-zA-Z]+)*\s*$/,
       /^.*$/,
@@ -113,24 +112,36 @@ class ManipulationInterface extends Component {
       empEmail: userInputs[3],
     };
     let i = 0;
+    let errorDetected = false;
     for (const key in userSubmit) {
       if (Object.hasOwnProperty.call(userSubmit, key)) {
-        this.checkError(userSubmit[key].value, regexList[i]);
+        const a = this.checkError(userSubmit[key].value, regexList[i]);
+        if (!a) {
+          errorDetected = true;
+          errorTexts[i].classList.toggle('visible', true);
+        } else {
+          errorTexts[i].classList.toggle('visible', false);
+        }
         i++;
       }
     }
+    errorDetected = !errorDetected;
+    return errorDetected;
   }
 
   checkError(userInput, regex) {
-    const errorCheck = userInput.match(regex) ? true : false;
-    return errorCheck;
+    return userInput.match(regex) ? true : false;
   }
 }
 
-class Table extends Component {}
+class Table extends Component {
+  addEmployeeRow(employee) {}
+}
 
 class EmployeeManager {
   employeeList = [];
+
+  addEmployee() {}
 }
 
 class Employee {
@@ -141,6 +152,16 @@ class Employee {
   _phoneNum;
   _email;
   _empDate;
+
+  constructor(name, age, address, experience, phoneNum, email, empDate) {
+    this._name = name;
+    this._age = age;
+    this._address = address;
+    this._experience = experience;
+    this._phoneNum = phoneNum;
+    this._email = email;
+    this._empDate = empDate;
+  }
   get name() {
     return this._name;
   }

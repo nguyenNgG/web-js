@@ -10,26 +10,39 @@
   <body>
     <div class="backdrop"></div>
     <section class="manipCont">
-      <label for="txtEmpName">Name: </label><br />
-      <input type="text" name="txtEmpName" id="txtEmpName" /><br /><br />
+      <label for="txtEmpName">Name </label><br />
+      <input type="text" name="txtEmpName" id="txtEmpName" /><br />
+      <p class="txtError">Please input name.</p>
+      <br />
 
-      <label for="txtEmpAge">Age: </label><br />
+      <label for="txtEmpAge">Age </label><br />
       <select name="txtEmpAge" id="txtEmpAge"></select
-      ><br /><br />
-      <label for="txtEmpAddr">Address: </label><br />
-      <input type="text" name="txtEmpAddr" id="txtEmpAddr" /><br /><br />
-      <label for="txtEmpExp">Experience: </label><br />
+      ><br />
+      <p class="txtError"></p>
+      <br />
+
+      <label for="txtEmpAddr">Address </label><br />
+      <input type="text" name="txtEmpAddr" id="txtEmpAddr" /><br />
+      <p class="txtError">Please input address.</p>
+      <br />
+
+      <label for="txtEmpExp">Experience </label><br />
       <select name="txtEmpExp" id="txtEmpExp"></select
-      ><br /><br />
-      <label for="txtEmpPhoneNum">Phone Number: </label><br />
-      <input
-        type="text"
-        name="txtEmpPhoneNum"
-        id="txtEmpPhoneNum"
-      /><br /><br />
-      <label for="txtEmpEmail">Email: </label><br />
-      <input type="text" name="txtEmpEmail" id="txtEmpEmail" /> <br /><br />
-      <label for="txtEmpEmployDate">Employment Date: </label>
+      ><br />
+      <p class="txtError"></p>
+      <br />
+
+      <label for="txtEmpPhoneNum">Phone Number </label><br />
+      <input type="text" name="txtEmpPhoneNum" id="txtEmpPhoneNum" /><br />
+      <p class="txtError">Please input phone number.</p>
+      <br />
+
+      <label for="txtEmpEmail">Email </label><br />
+      <input type="text" name="txtEmpEmail" id="txtEmpEmail" /> <br />
+      <p class="txtError">Please input email.</p>
+      <br />
+
+      <label for="txtEmpEmployDate">Employment Date </label><br />
       <input
         type="date"
         id="txtEmpEmployDate"
@@ -37,7 +50,9 @@
         value="2000-01-01"
         min="2000-01-01"
         max="2020-12-31"
-      /><br /><br />
+      /><br />
+      <p class="txtError"></p>
+      <br />
     </section>
     <section id="header"></section>
     <section id="body">

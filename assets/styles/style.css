@@ -14,9 +14,7 @@ table {
   width: 100%;
 }
 
-select {
-  margin: 0.5em 0em 0.5em 0em;
-}
+
 
 .backdrop {
   position: fixed;
@@ -45,12 +43,31 @@ select {
 
 .manipCont {
   width: 20vw;
+  min-width: 10em;
   padding: 1em 1.2em 1em 1.2em;
   border-radius: 1em;
   background: rgb(255, 255, 255);
   z-index: 20;
   box-shadow: 0 1px 8px rgba(0, 0, 0, 1);
   display: none;
+  left: 40vw;
+  top: 20vh;
+}
+
+.manipCont label {
+  
+}
+
+.manipCont p.txtError{
+  font-size: 70%;
+  color:rgb(145, 47, 60);
+  position: relative;
+  block-size: 0;
+  display: none;
+}
+
+.manipCont p.txtError.visible{
+  display: block;
 }
 
 .manipCont.visible {
@@ -58,7 +75,7 @@ select {
 }
 
 .manipCont input[type='text'] {
-  width: 15rem;
+  width: 80%;
   outline: none;
   border: none;
   border-bottom: 1px solid grey;
@@ -84,4 +101,16 @@ select {
 .manipCont input[type='submit']:active {
   color: white;
   background: black;
+}
+
+.manipCont select {
+  border-radius: 0.5em;
+  outline: none;
+  margin: 0.5em 0em 0.5em 0em;
+}
+
+.manipCont input[type='date'] {
+  border-radius: 0.5em;
+  outline: none;
+  margin: 0.5em 0em 0.5em 0em;
 }
