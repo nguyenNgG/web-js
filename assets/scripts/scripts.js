@@ -94,7 +94,36 @@ class ManipulationInterface extends Component {
   checkSubmit() {
     const container = document.querySelector('.manipCont');
     const userInputs = container.querySelectorAll('input');
-    
+    const userSelects = container.querySelectorAll('select');
+    const regexList = [
+      /^[a-zA-Z]+(\s?[a-zA-Z]+)*\s*$/,
+      /^.*$/,
+      /^[a-zA-Z0-9,]+(\s?[a-zA-Z0-9,]+)*\s*$/,
+      /^.*$/,
+      /[0-9]{10,12}/,
+      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+      /^.*$/,
+    ];
+    const userSubmit = {
+      empName: userInputs[0],
+      empAge: userSelects[0].options[userSelects[0].selectedIndex],
+      empAddr: userInputs[1],
+      empExp: userSelects[1].options[userSelects[1].selectedIndex],
+      empPhoneNum: userInputs[2],
+      empEmail: userInputs[3],
+    };
+    let i = 0;
+    for (const key in userSubmit) {
+      if (Object.hasOwnProperty.call(userSubmit, key)) {
+        this.checkError(userSubmit[key].value, regexList[i]);
+        i++;
+      }
+    }
+  }
+
+  checkError(userInput, regex) {
+    const errorCheck = userInput.match(regex) ? true : false;
+    return errorCheck;
   }
 }
 
