@@ -1,6 +1,6 @@
 * {
   box-sizing: border-box;
-  font-family: sans-serif;
+  font-family: monospace;
 }
 
 .tblContainer {
@@ -13,8 +13,6 @@ table {
   table-layout: auto;
   width: 100%;
 }
-
-
 
 .backdrop {
   position: fixed;
@@ -55,18 +53,23 @@ table {
 }
 
 .manipCont label {
-  
 }
 
-.manipCont p.txtError{
+tr.data td{
+  background-color: rgb(190, 190, 190);
+  border-radius: 0.2em;
+  cursor: pointer;
+}
+
+.manipCont p.txtError {
   font-size: 70%;
-  color:rgb(145, 47, 60);
+  color: rgb(145, 47, 60);
   position: relative;
   block-size: 0;
   display: none;
 }
 
-.manipCont p.txtError.visible{
+.manipCont p.txtError.visible {
   display: block;
 }
 
@@ -113,4 +116,11 @@ table {
   border-radius: 0.5em;
   outline: none;
   margin: 0.5em 0em 0.5em 0em;
+}
+
+.tblContainer input, .tblContainer select{
+  border: none;
+  outline: none;
+  border-radius: 0.2em;
+  width: 100%;
 }
