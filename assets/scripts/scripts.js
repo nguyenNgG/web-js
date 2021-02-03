@@ -40,6 +40,16 @@ class Header extends Component {
 }
 
 class ManipulationInterface {
+  static regexList = [
+    /^[a-zA-Z]+(\s?[a-zA-Z]+)*\s*$/,
+    /^.*$/,
+    /^[a-zA-Z0-9,]+(\s?[a-zA-Z0-9,]+)*\s*$/,
+    /^.*$/,
+    /[0-9]{10,12}/,
+    /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+    /^.*$/,
+  ];
+
   static optionSequencer(initial, end, jump, parent, selected) {
     for (let i = initial; i <= end; i = i + jump) {
       const option = document.createElement('option');
@@ -89,15 +99,6 @@ class ManipulationInterface {
     const userInputs = container.querySelectorAll('input');
     const userSelects = container.querySelectorAll('select');
     const errorTexts = container.querySelectorAll('.txtError');
-    const regexList = [
-      /^[a-zA-Z]+(\s?[a-zA-Z]+)*\s*$/,
-      /^.*$/,
-      /^[a-zA-Z0-9,]+(\s?[a-zA-Z0-9,]+)*\s*$/,
-      /^.*$/,
-      /[0-9]{10,12}/,
-      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-      /^.*$/,
-    ];
     const userSubmit = {
       empName: userInputs[0],
       empAge: userSelects[0].options[userSelects[0].selectedIndex],
@@ -111,8 +112,11 @@ class ManipulationInterface {
     let errorDetected = false;
     for (const key in userSubmit) {
       if (Object.hasOwnProperty.call(userSubmit, key)) {
-        const a = this.checkError(userSubmit[key].value, regexList[i]);
-        if (!a) {
+        const noError = this.checkError(
+          userSubmit[key].value,
+          this.regexList[i]
+        );
+        if (!noError) {
           errorDetected = true;
           errorTexts[i].classList.toggle('visible', true);
         } else {
@@ -180,10 +184,23 @@ class Table {
         DOMHelpers.clearEventListener(row);
       });
     });
+    rows.forEach((row) => {
+      // const btnSubmit = row.querySelector('input[type="submit"]');
+      // btnSubmit.addEventListener(
+      //   'click',
+      //   this.rowCheckManipulationSubmit.bind(this, row)
+      // );
+
+      // Add submit button to row at employee add
+      // Toggle visibility
+    });
   }
 
   static rowManipulationFunction(row) {
     const dataColumns = row.querySelectorAll('td');
+    const btnSubmit = document.createElement('input');
+    btnSubmit.setAttribute('type', 'submit');
+    btnSubmit.setAttribute('value', 'Update');
     for (const column of dataColumns) {
       let fieldElement;
       const colData = column.textContent;
@@ -210,6 +227,24 @@ class Table {
       }
       column.innerHTML = '';
       column.append(fieldElement);
+    }
+    let btnCol = row.insertCell(-1);
+    btnCol.append(btnSubmit);
+  }
+
+  static rowCheckManipulationSubmit(row) {
+    const dataColumns = row.querySelectorAll('td');
+    let i = 0;
+    for (const column of dataColumns) {
+      const userInput = column.querySelector('input')
+        ? column.querySelector('input').value
+        : column.querySelector('select').value;
+      const rs = ManipulationInterface.checkError(
+        userInput,
+        ManipulationInterface.regexList[i]
+      );
+      console.log(rs);
+      i++;
     }
   }
 }
