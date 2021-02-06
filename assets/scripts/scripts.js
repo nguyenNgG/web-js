@@ -67,14 +67,14 @@ class ManipulationInterface {
     const head = document.createElement('p');
     const ageSelector = document.querySelector('#txtEmpAge');
     const expSelector = document.querySelector('#txtEmpExp');
-    const empMngr = new EmployeeManager();
+    // const empMngr = new EmployeeManager();
     this.optionSequencer(18, 60, 1, ageSelector, 18);
     this.optionSequencer(0, 2, 0.5, expSelector, 0);
     head.textContent = 'Add employee';
     head.classList.toggle('header');
     container.insertAdjacentElement('afterbegin', head);
     container.append(btnSubmit._btn);
-    empMngr.addButtonSubmitFunction();
+    EmployeeManager.addButtonSubmitFunction();
   }
 
   static renderInterface() {
@@ -142,7 +142,7 @@ class Table {
       row.remove();
     });
   }
-  static addEmployeeRow(employeeList) {
+  static renderTable(employeeList) {
     const colClassList = [
       'empName',
       'empAge',
@@ -170,71 +170,127 @@ class Table {
         }
       }
       table.append(row);
-      this.addRowManipulation();
+      this.addRowManipulation(row);
       i++;
     }
   }
 
-  static addRowManipulation() {
-    const table = document.querySelector('body table.tblContainer');
-    const rows = table.querySelectorAll('tr.data');
-    rows.forEach((row) => {
-      row.addEventListener('click', () => {
-        this.rowManipulationFunction(row);
-        DOMHelpers.clearEventListener(row);
-      });
-    });
-    rows.forEach((row) => {
-      // const btnSubmit = row.querySelector('input[type="submit"]');
-      // btnSubmit.addEventListener(
-      //   'click',
-      //   this.rowCheckManipulationSubmit.bind(this, row)
-      // );
+  static addRowManipulation(row) {
+    const btnUpdate = document.createElement('input');
+    btnUpdate.setAttribute('type', 'submit');
+    btnUpdate.setAttribute('value', 'Update');
+    const btnDelete = document.createElement('input');
+    btnDelete.setAttribute('type', 'submit');
+    btnDelete.setAttribute('value', 'Delete');
+    const btnSubmitUpdate = document.createElement('input');
+    btnSubmitUpdate.setAttribute('type', 'submit');
+    btnSubmitUpdate.setAttribute('value', 'Submit');
+    const btnCol = row.insertCell(-1);
+    btnCol.append(btnUpdate);
+    btnCol.append(btnSubmitUpdate);
+    btnCol.append(btnDelete);
+    btnUpdate.classList.toggle('visible');
+    btnDelete.classList.toggle('visible');
+    btnUpdate.addEventListener(
+      'click',
+      this.rowManipulationToggle.bind(
+        this,
+        row,
+        btnUpdate,
+        btnSubmitUpdate,
+        btnDelete
+      )
+    );
+    btnSubmitUpdate.addEventListener(
+      'click',
+      this.rowSubmitManipulation.bind(this, row)
+    );
+  }
 
-      // Add submit button to row at employee add
-      // Toggle visibility
-    });
+  static rowManipulationToggle(row, btnUpdate, btnSubmitUpdate, btnDelete) {
+    btnUpdate.classList.toggle('visible', false);
+    btnDelete.classList.toggle('visible', false);
+    btnSubmitUpdate.classList.toggle('visible', true);
+    this.rowManipulationFunction(row);
   }
 
   static rowManipulationFunction(row) {
     const dataColumns = row.querySelectorAll('td');
-    const btnSubmit = document.createElement('input');
-    btnSubmit.setAttribute('type', 'submit');
-    btnSubmit.setAttribute('value', 'Update');
+    let i = 0;
     for (const column of dataColumns) {
-      let fieldElement;
-      const colData = column.textContent;
-      if (column.getAttribute('class') === 'empAge') {
-        const selectField = document.createElement('select');
-        ManipulationInterface.optionSequencer(18, 60, 1, selectField, colData);
-        fieldElement = selectField;
-      } else if (column.getAttribute('class') === 'empExp') {
-        const selectField = document.createElement('select');
-        ManipulationInterface.optionSequencer(0, 2, 0.5, selectField, colData);
-        fieldElement = selectField;
-      } else if (column.getAttribute('class') === 'empEmplDate') {
-        const inputField = document.createElement('input');
-        inputField.setAttribute('type', 'date');
-        inputField.setAttribute('value', colData);
-        inputField.setAttribute('min', '2000-01-01');
-        inputField.setAttribute('max', '2020-12-31');
-        fieldElement = inputField;
-      } else {
-        const inputField = document.createElement('input');
-        inputField.setAttribute('value', colData);
-        inputField.setAttribute('type', 'text');
-        fieldElement = inputField;
+      if (i <= 6) {
+        let fieldElement;
+        const colData = column.textContent;
+        if (column.getAttribute('class') === 'empAge') {
+          const selectField = document.createElement('select');
+          ManipulationInterface.optionSequencer(
+            18,
+            60,
+            1,
+            selectField,
+            colData
+          );
+          fieldElement = selectField;
+        } else if (column.getAttribute('class') === 'empExp') {
+          const selectField = document.createElement('select');
+          ManipulationInterface.optionSequencer(
+            0,
+            2,
+            0.5,
+            selectField,
+            colData
+          );
+          fieldElement = selectField;
+        } else if (column.getAttribute('class') === 'empEmplDate') {
+          const inputField = document.createElement('input');
+          inputField.setAttribute('type', 'date');
+          inputField.setAttribute('value', colData);
+          inputField.setAttribute('min', '2000-01-01');
+          inputField.setAttribute('max', '2020-12-31');
+          fieldElement = inputField;
+        } else {
+          const inputField = document.createElement('input');
+          inputField.setAttribute('value', colData);
+          inputField.setAttribute('type', 'text');
+          fieldElement = inputField;
+        }
+        column.innerHTML = '';
+        column.append(fieldElement);
+        i++;
       }
-      column.innerHTML = '';
-      column.append(fieldElement);
     }
-    let btnCol = row.insertCell(-1);
-    btnCol.append(btnSubmit);
+  }
+
+  static rowSubmitManipulation(row) {
+    const rowData = Table.rowCheckManipulationSubmit(row);
+    if (!rowData.errorDetected) {
+      const rowNum = row.getAttribute('rownum');
+      const employeeOld = EmployeeManager.employeeList[rowNum];
+      employeeOld._name = rowData._name;
+      employeeOld._age = rowData._age;
+      employeeOld._address = rowData._address;
+      employeeOld._experience = rowData._experience;
+      employeeOld._phoneNum = rowData._phoneNum;
+      employeeOld._email = rowData._email;
+      employeeOld._empDate = rowData._empDate;
+      Table.renderTable(EmployeeManager.employeeList);
+    }
   }
 
   static rowCheckManipulationSubmit(row) {
     const dataColumns = row.querySelectorAll('td');
     let i = 0;
+    let rowData = {
+      errorDetected: false,
+      _name: '',
+      _age: '',
+      _address: '',
+      _experience: '',
+      _phoneNum: '',
+      _email: '',
+      _empDate: '',
+    };
+
     for (const column of dataColumns) {
       const userInput = column.querySelector('input')
         ? column.querySelector('input').value
@@ -243,21 +299,40 @@ class Table {
         userInput,
         ManipulationInterface.regexList[i]
       );
-      console.log(rs);
+      if (!rs) {
+        rowData.errorDetected = true;
+      }
+      switch (i) {
+        case 0:
+          rowData._name = userInput;
+        case 1:
+          rowData._age = userInput;
+        case 2:
+          rowData._address = userInput;
+        case 3:
+          rowData._experience = userInput;
+        case 4:
+          rowData._phoneNum = userInput;
+        case 5:
+          rowData._email = userInput;
+        case 6:
+          rowData._empDate = userInput;
+      }
       i++;
     }
+    return rowData;
   }
 }
 
 class EmployeeManager {
-  employeeList = [];
+  static employeeList = [];
 
-  addButtonSubmitFunction() {
+  static addButtonSubmitFunction() {
     const container = document.querySelector('.manipCont');
     const btnSubmit = container.querySelector('input[type="submit"]');
     btnSubmit.addEventListener('click', this.addEmployee.bind(this));
   }
-  addEmployee() {
+  static addEmployee() {
     const submitData = ManipulationInterface.checkSubmit();
     if (submitData != null) {
       const employee = new Employee(
@@ -273,7 +348,7 @@ class EmployeeManager {
       this.employeeList.sort((a, b) => {
         return +(a._name > b._name) || -(a._name <= b._name);
       });
-      Table.addEmployeeRow(this.employeeList);
+      Table.renderTable(this.employeeList);
     }
   }
 }
@@ -295,48 +370,6 @@ class Employee {
     this._phoneNum = phoneNum;
     this._email = email;
     this._empDate = empDate;
-  }
-  get name() {
-    return this._name;
-  }
-  set name(value) {
-    this._name = value;
-  }
-  get age() {
-    return this._age;
-  }
-  set age(value) {
-    this._age = value;
-  }
-  get address() {
-    return this._address;
-  }
-  set address(value) {
-    this._address = value;
-  }
-  get experience() {
-    return this._experience;
-  }
-  set experience(value) {
-    this._experience = value;
-  }
-  get phoneNum() {
-    return this._phoneNum;
-  }
-  set phoneNum(value) {
-    this._phoneNum = value;
-  }
-  get email() {
-    return this._email;
-  }
-  set email(value) {
-    this._email = value;
-  }
-  get empDate() {
-    return this._empDate;
-  }
-  set empDate(value) {
-    this._empDate = value;
   }
 }
 

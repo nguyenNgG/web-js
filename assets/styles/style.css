@@ -46,7 +46,7 @@ table {
   border-radius: 1em;
   background: rgb(255, 255, 255);
   z-index: 20;
-  box-shadow: 0 1px 8px rgba(0, 0, 0, 1);
+  box-shadow: 0 1px 8px rgba(0, 0, 0);
   display: none;
   left: 40vw;
   top: 20vh;
@@ -55,10 +55,12 @@ table {
 .manipCont label {
 }
 
-tr.data td{
-  background-color: rgb(190, 190, 190);
+tr.data td {
+  background-color: rgb(255, 255, 255);
+  border-color: rgba(0, 0, 0);
+  border: solid;
+  border-width: 0.1em;
   border-radius: 0.2em;
-  cursor: pointer;
 }
 
 .manipCont p.txtError {
@@ -117,10 +119,30 @@ tr.data td{
   outline: none;
   margin: 0.5em 0em 0.5em 0em;
 }
-
-.tblContainer input, .tblContainer select{
+.tblContainer input,
+.tblContainer select {
+  border-radius: 0.2em;
   border: none;
   outline: none;
-  border-radius: 0.2em;
+}
+
+.tblContainer input[type='text'],
+.tblContainer select {
   width: 100%;
+}
+
+.tblContainer input[type='submit'] {
+  border: solid;
+  border-width: 0.1em;
+  border-color: rgba(0, 0, 0);
+  background-color: rgb(255, 255, 255);
+  margin-left: 0.2em;
+  margin-right: 0.2em;
+  width: 30%;
+  min-width: 5em;
+  display: none;
+}
+
+.tblContainer input[type='submit'].visible {
+  display: inline-block;
 }
