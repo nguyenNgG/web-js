@@ -4,6 +4,7 @@ class Application {
     Status.init();
     ManipulationInterface.createInterface();
     EmployeeManager.loadFromLocal();
+    Status.lastAction.textContent = 'Welcome.';
   }
 }
 
