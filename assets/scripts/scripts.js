@@ -199,7 +199,7 @@ class Table {
         }
       }
       let j = 0;
-      const table = document.querySelector('body table.tblContainer');
+      const table = document.querySelector('.tblContainer');
       const row = document.createElement('tr');
       row.setAttribute('rowNum', i);
       row.setAttribute('class', 'data');
