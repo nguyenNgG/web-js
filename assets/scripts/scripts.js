@@ -11,30 +11,32 @@ class DOMHelpers {
     element.replaceWith(clonedElement);
     return clonedElement;
   }
-}
 
-class Component {}
-
-class Button extends Component {
-  _btn;
-  constructor(type, value) {
-    super();
-    this._btn = document.createElement('input');
-    this._btn.setAttribute('type', type);
-    this._btn.setAttribute('value', value);
+  static createInput(type, value) {
+    const btnInput = document.createElement('input');
+    btnInput.setAttribute('type', type);
+    btnInput.setAttribute('value', value);
+    return btnInput;
   }
 }
 
-class Header extends Component {
-  _btnAdd;
-
+class Header {
   constructor() {
-    super();
-    this._btnAdd = new Button('button', 'Add');
-    document.querySelector('#header').append(this._btnAdd._btn);
-    this._btnAdd._btn.addEventListener(
+    const btnAdd = DOMHelpers.createInput('button', 'Add');
+    const btnSearch = DOMHelpers.createInput('button', 'Search');
+    const inputSearch = document.createElement('input');
+    inputSearch.setAttribute('type', 'text');
+    inputSearch.setAttribute('id', 'searchbar');
+    document.querySelector('#header').append(btnAdd);
+    document.querySelector('#header').append(inputSearch);
+    document.querySelector('#header').append(btnSearch);
+    btnAdd.addEventListener(
       'click',
       ManipulationInterface.renderInterface.bind(ManipulationInterface)
+    );
+    btnSearch.addEventListener(
+      'click',
+      Table.renderTable.bind(Table, EmployeeManager.employeeList, true)
     );
   }
 }
@@ -63,24 +65,23 @@ class ManipulationInterface {
   }
   static createInterface() {
     const container = document.querySelector('.manipCont');
-    const btnSubmit = new Button('submit', 'Submit');
+    const btnSubmit = DOMHelpers.createInput('submit', 'Submit');
     const head = document.createElement('p');
     const ageSelector = document.querySelector('#txtEmpAge');
     const expSelector = document.querySelector('#txtEmpExp');
-    // const empMngr = new EmployeeManager();
     this.optionSequencer(18, 60, 1, ageSelector, 18);
     this.optionSequencer(0, 2, 0.5, expSelector, 0);
     head.textContent = 'Add employee';
     head.classList.toggle('header');
     container.insertAdjacentElement('afterbegin', head);
-    container.append(btnSubmit._btn);
+    container.append(btnSubmit);
     EmployeeManager.addButtonSubmitFunction();
   }
 
   static renderInterface() {
     let backdrop = document.querySelector('.backdrop');
-    backdrop = DOMHelpers.clearEventListener(backdrop);
     const container = document.querySelector('.manipCont');
+    backdrop = DOMHelpers.clearEventListener(backdrop);
     backdrop.classList.toggle('visible');
     container.classList.toggle('visible');
     backdrop.addEventListener('click', this.closeInterface.bind(this));
@@ -112,7 +113,7 @@ class ManipulationInterface {
     let errorDetected = false;
     for (const key in userSubmit) {
       if (Object.hasOwnProperty.call(userSubmit, key)) {
-        const noError = this.checkError(
+        const noError = this.regexCheck(
           userSubmit[key].value,
           this.regexList[i]
         );
@@ -129,8 +130,8 @@ class ManipulationInterface {
     return result;
   }
 
-  static checkError(userInput, regex) {
-    return userInput.match(regex) ? true : false;
+  static regexCheck(text, regex) {
+    return text.match(regex) ? true : false;
   }
 }
 
@@ -142,7 +143,8 @@ class Table {
       row.remove();
     });
   }
-  static renderTable(employeeList) {
+
+  static renderTable(employeeList, isSearch) {
     const colClassList = [
       'empName',
       'empAge',
@@ -152,9 +154,20 @@ class Table {
       'empEmail',
       'empEmplDate',
     ];
+    const userSearchInput = document.querySelector('#searchbar');
     this.clearTable();
     let i = 0;
     for (const employee of employeeList) {
+      if (isSearch) {
+        const rs = ManipulationInterface.regexCheck(
+          employee._name,
+          `^.*${userSearchInput.value}.*$`
+        );
+        if (!rs) {
+          i++;
+          continue;
+        }
+      }
       let j = 0;
       const table = document.querySelector('body table.tblContainer');
       const row = document.createElement('tr');
@@ -176,15 +189,9 @@ class Table {
   }
 
   static addRowManipulation(row) {
-    const btnUpdate = document.createElement('input');
-    btnUpdate.setAttribute('type', 'submit');
-    btnUpdate.setAttribute('value', 'Update');
-    const btnDelete = document.createElement('input');
-    btnDelete.setAttribute('type', 'submit');
-    btnDelete.setAttribute('value', 'Delete');
-    const btnSubmitUpdate = document.createElement('input');
-    btnSubmitUpdate.setAttribute('type', 'submit');
-    btnSubmitUpdate.setAttribute('value', 'Submit');
+    const btnUpdate = DOMHelpers.createInput('button', 'Update');
+    const btnDelete = DOMHelpers.createInput('button', 'Delete');
+    const btnSubmitUpdate = DOMHelpers.createInput('submit', 'Submit');
     const btnCol = row.insertCell(-1);
     btnCol.append(btnUpdate);
     btnCol.append(btnSubmitUpdate);
@@ -273,7 +280,7 @@ class Table {
       employeeOld._phoneNum = rowData._phoneNum;
       employeeOld._email = rowData._email;
       employeeOld._empDate = rowData._empDate;
-      Table.renderTable(EmployeeManager.employeeList);
+      Table.renderTable(EmployeeManager.employeeList, false);
     }
   }
 
@@ -293,30 +300,36 @@ class Table {
 
     for (const column of dataColumns) {
       const userInput = column.querySelector('input')
-        ? column.querySelector('input').value
-        : column.querySelector('select').value;
-      const rs = ManipulationInterface.checkError(
-        userInput,
+        ? column.querySelector('input')
+        : column.querySelector('select');
+
+      column.classList.toggle('errorDetected', false);
+      userInput.classList.toggle('errorDetected', false);
+
+      const rs = ManipulationInterface.regexCheck(
+        userInput.value,
         ManipulationInterface.regexList[i]
       );
       if (!rs) {
         rowData.errorDetected = true;
+        column.classList.toggle('errorDetected', true);
+        userInput.classList.toggle('errorDetected', true);
       }
       switch (i) {
         case 0:
-          rowData._name = userInput;
+          rowData._name = userInput.value;
         case 1:
-          rowData._age = userInput;
+          rowData._age = userInput.value;
         case 2:
-          rowData._address = userInput;
+          rowData._address = userInput.value;
         case 3:
-          rowData._experience = userInput;
+          rowData._experience = userInput.value;
         case 4:
-          rowData._phoneNum = userInput;
+          rowData._phoneNum = userInput.value;
         case 5:
-          rowData._email = userInput;
+          rowData._email = userInput.value;
         case 6:
-          rowData._empDate = userInput;
+          rowData._empDate = userInput.value;
       }
       i++;
     }
@@ -348,7 +361,7 @@ class EmployeeManager {
       this.employeeList.sort((a, b) => {
         return +(a._name > b._name) || -(a._name <= b._name);
       });
-      Table.renderTable(this.employeeList);
+      Table.renderTable(this.employeeList, false);
     }
   }
 }
