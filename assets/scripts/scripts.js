@@ -1,7 +1,9 @@
 class Application {
   static init() {
     const header = new Header();
+    Status.init();
     ManipulationInterface.createInterface();
+    EmployeeManager.loadFromLocal();
   }
 }
 
@@ -19,17 +21,32 @@ class DOMHelpers {
     return btnInput;
   }
 }
+class Status {
+  static lastAction;
 
+  static init() {
+    const status = document.querySelector('#status');
+    this.lastAction = document.createElement('p');
+    status.append(this.lastAction);
+  }
+}
 class Header {
   constructor() {
     const btnAdd = DOMHelpers.createInput('button', 'Add');
     const btnSearch = DOMHelpers.createInput('button', 'Search');
+    const btnReset = DOMHelpers.createInput('button', 'Show All');
+    const btnSave = DOMHelpers.createInput('button', 'Save to Local');
+    const btnLoad = DOMHelpers.createInput('button', 'Load from Local');
     const inputSearch = document.createElement('input');
     inputSearch.setAttribute('type', 'text');
     inputSearch.setAttribute('id', 'searchbar');
+    inputSearch.setAttribute('placeholder', 'Search by Name');
     document.querySelector('#header').append(btnAdd);
     document.querySelector('#header').append(inputSearch);
     document.querySelector('#header').append(btnSearch);
+    document.querySelector('#header').append(btnReset);
+    document.querySelector('#header').append(btnSave);
+    document.querySelector('#header').append(btnLoad);
     btnAdd.addEventListener(
       'click',
       ManipulationInterface.renderInterface.bind(ManipulationInterface)
@@ -38,6 +55,18 @@ class Header {
       'click',
       Table.renderTable.bind(Table, EmployeeManager.employeeList, true)
     );
+    btnReset.addEventListener(
+      'click',
+      Table.renderTable.bind(Table, EmployeeManager.employeeList, false)
+    );
+    btnSave.addEventListener(
+      'click',
+      EmployeeManager.saveToLocal.bind(EmployeeManager)
+    );
+    btnLoad.addEventListener(
+      'click',
+      EmployeeManager.loadFromLocal.bind(EmployeeManager)
+    );
   }
 }
 
@@ -45,7 +74,7 @@ class ManipulationInterface {
   static regexList = [
     /^[a-zA-Z]+(\s?[a-zA-Z]+)*\s*$/,
     /^.*$/,
-    /^[a-zA-Z0-9,]+(\s?[a-zA-Z0-9,]+)*\s*$/,
+    /^[a-zA-Z0-9,/]+(\s?[a-zA-Z0-9,/]+)*\s*$/,
     /^.*$/,
     /[0-9]{10,12}/,
     /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
@@ -145,6 +174,7 @@ class Table {
   }
 
   static renderTable(employeeList, isSearch) {
+    Status.lastAction.textContent = 'Table show attempted.';
     const colClassList = [
       'empName',
       'empAge',
@@ -155,14 +185,13 @@ class Table {
       'empEmplDate',
     ];
     const userSearchInput = document.querySelector('#searchbar');
+    const regExp = new RegExp(`^.*${userSearchInput.value}.*$`, 'i');
     this.clearTable();
     let i = 0;
     for (const employee of employeeList) {
       if (isSearch) {
-        const rs = ManipulationInterface.regexCheck(
-          employee._name,
-          `^.*${userSearchInput.value}.*$`
-        );
+        Status.lastAction.textContent = 'Search attempted.';
+        const rs = ManipulationInterface.regexCheck(employee._name, regExp);
         if (!rs) {
           i++;
           continue;
@@ -211,6 +240,10 @@ class Table {
     btnSubmitUpdate.addEventListener(
       'click',
       this.rowSubmitManipulation.bind(this, row)
+    );
+    btnDelete.addEventListener(
+      'click',
+      EmployeeManager.removeEmployee.bind(EmployeeManager, row)
     );
   }
 
@@ -281,6 +314,9 @@ class Table {
       employeeOld._email = rowData._email;
       employeeOld._empDate = rowData._empDate;
       Table.renderTable(EmployeeManager.employeeList, false);
+      Status.lastAction.textContent = 'Employee updated.';
+    } else {
+      Status.lastAction.textContent = "Employee couldn't be updated.";
     }
   }
 
@@ -359,10 +395,41 @@ class EmployeeManager {
       );
       this.employeeList.push(employee);
       this.employeeList.sort((a, b) => {
-        return +(a._name > b._name) || -(a._name <= b._name);
+        return a._name.localeCompare(b._name, 'en');
       });
       Table.renderTable(this.employeeList, false);
+      Status.lastAction.textContent = 'Employee added.';
+    } else {
+      Status.lastAction.textContent = "Employee couldn't be added.";
     }
+  }
+
+  static removeEmployee(row) {
+    this.employeeList.splice(row.getAttribute('rownum'), 1);
+    Table.renderTable(this.employeeList, false);
+    Status.lastAction.textContent = 'Employee removed.';
+  }
+
+  static saveToLocal() {
+    localStorage.setItem(
+      'database',
+      JSON.stringify(Array.from(this.employeeList))
+    );
+    Status.lastAction.textContent = 'Saved to local storage.';
+  }
+
+  static loadFromLocal() {
+    this.employeeList.splice(0, this.employeeList.length);
+    const localDataJSON = localStorage.getItem('database');
+    const localData = JSON.parse(localDataJSON) || [];
+    localData.forEach((localObject) => {
+      this.employeeList.push(localObject);
+    });
+    this.employeeList.sort((a, b) => {
+      return a._name.localeCompare(b._name, 'en');
+    });
+    Table.renderTable(this.employeeList, false);
+    Status.lastAction.textContent = 'Loaded from local storage.';
   }
 }
 
