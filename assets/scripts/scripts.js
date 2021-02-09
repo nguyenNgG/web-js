@@ -61,6 +61,7 @@ class Header {
         Table.renderTable(EmployeeManager.employeeList, true);
       }
     });
+    inputSearch.addEventListener('click', inputSearch.select.bind(inputSearch));
     btnReset.addEventListener(
       'click',
       Table.renderTable.bind(Table, EmployeeManager.employeeList, false)
@@ -179,7 +180,7 @@ class Table {
     });
   }
 
-  static renderTable(employeeList, isSearch) {
+  static renderTable(employeeList, isSearch, highlight = '') {
     Status.lastAction.textContent = 'Table show attempted.';
     const colClassList = [
       'empName',
@@ -194,13 +195,18 @@ class Table {
     const regExp = new RegExp(`^.*${userSearchInput.value}.*$`, 'i');
     this.clearTable();
     let i = 0;
+    let focus = null;
     for (const employee of employeeList) {
       if (isSearch) {
-        Status.lastAction.textContent = 'Search attempted.';
-        const rs = ManipulationInterface.regexCheck(employee._name, regExp);
-        if (!rs) {
-          i++;
-          continue;
+        if (regExp.source !== '^.*.*$') {
+          Status.lastAction.textContent = 'Search attempted.';
+          const rs = ManipulationInterface.regexCheck(employee._name, regExp);
+          if (!rs) {
+            i++;
+            continue;
+          }
+        } else {
+          break;
         }
       }
       let j = 0;
@@ -213,6 +219,10 @@ class Table {
           const data = document.createElement('td');
           data.setAttribute('class', colClassList[j]);
           data.textContent = employee[key];
+          if (employee._name === highlight) {
+            row.classList.toggle('highlight', true);
+            focus = row;
+          }
           row.append(data);
           j++;
         }
@@ -220,6 +230,12 @@ class Table {
       table.append(row);
       this.addRowManipulation(row);
       i++;
+    }
+    if (focus !== null) {
+      focus.scrollIntoView();
+      window.setTimeout(() => {
+        focus.classList.toggle('highlight', false);
+      }, 2000);
     }
   }
 
@@ -319,7 +335,10 @@ class Table {
       employeeOld._phoneNum = rowData._phoneNum;
       employeeOld._email = rowData._email;
       employeeOld._empDate = rowData._empDate;
-      Table.renderTable(EmployeeManager.employeeList, false);
+      EmployeeManager.employeeList.sort((a, b) => {
+        return a._name.localeCompare(b._name, 'en');
+      });
+      Table.renderTable(EmployeeManager.employeeList, false, employeeOld._name);
       Status.lastAction.textContent = 'Employee updated.';
     } else {
       Status.lastAction.textContent = "Employee couldn't be updated.";

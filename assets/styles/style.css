@@ -21,20 +21,20 @@
 }
 
 body {
-  display: flex;
+  /* display: flex; */
 }
 
 #header {
-  display: flex;
-  flex-direction: column;
-  width: 14vw;
-  text-align: left;
-  justify-content: center;
+  /* display: flex; */
+  /* flex-direction: column; */
+  /* width: 14vw; */
+  /* text-align: left; */
+  /* justify-content: center; */
 }
 
 #status {
   font-weight: bold;
-  text-align: center;
+  text-align: left;
 }
 
 hr {
@@ -61,14 +61,6 @@ hr {
   display: none;
   left: 40vw;
   top: 20vh;
-}
-
-tr.data td {
-  background-color: rgb(255, 255, 255);
-  border-color: rgba(0, 0, 0);
-  border: solid;
-  border-width: 0.1em;
-  border-radius: 0.2em;
 }
 
 .manipCont p.txtError {
@@ -127,11 +119,15 @@ tr.data td {
   margin: 0.2em 0em 0.2em 0em;
 }
 
+#view {
+  margin-top: 0.5em;
+}
+
 table {
   text-align: center;
   border-spacing: 1em;
   table-layout: auto;
-  width: 85vw;
+  width: 98vw;
 }
 
 #body {
@@ -144,6 +140,34 @@ table {
   background-color: rgb(0, 0, 0);
   position: sticky;
   top: 0;
+}
+
+.tblContainer tr.data:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+tr.data td {
+  border-color: rgb(0, 0, 0);
+  border: solid;
+  border-width: 0.1em;
+  border-radius: 0.2em;
+}
+
+.tblContainer tr.data.highlight td {
+  animation-name: focus;
+  animation-duration: 1s;
+  animation-timing-function: ease-out;
+}
+
+@keyframes focus {
+  from {
+    background-color: rgb(0, 0, 0);
+    color: rgb(255, 255, 255);
+  }
+  to {
+    background-color: rgb(255, 255, 255);
+    color: rgb(0, 0, 0);
+  }
 }
 
 .tblContainer input,
@@ -197,6 +221,7 @@ table {
 #header input {
   text-align: center;
   border: solid;
+  outline: none;
   border-radius: 0.2em;
   border-width: 0.1em;
   border-color: rgb(0, 0, 0);
