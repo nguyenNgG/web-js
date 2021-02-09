@@ -20,8 +20,16 @@
   display: block;
 }
 
+body {
+  display: flex;
+}
+
 #header {
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  width: 14vw;
+  text-align: left;
+  justify-content: center;
 }
 
 #status {
@@ -37,8 +45,9 @@ hr {
 }
 
 .header {
+  font-size: 1.2em;
   font-weight: bold;
-  padding: 0.2em 0em 0.8em 0em;
+  padding: 0.1em 0em 0.4em 0em;
 }
 
 .manipCont {
@@ -82,15 +91,15 @@ tr.data td {
   width: 80%;
   outline: none;
   border: none;
-  border-bottom: 1px solid grey;
+  border-bottom: 1px solid rgb(128, 128, 128);
   padding: 1em 1em 0.2em 1em;
 }
 
 .manipCont input[type='submit'] {
+  background-color: rgb(255, 255, 255);
   font-weight: bold;
-  color: white;
-  background: darkgrey;
-  border: none;
+  border: solid 0.1em;
+  border-color: rgb(0, 0, 0);
   border-radius: 1em;
   padding: 0.5em 1em 0.5em 1em;
   outline: none;
@@ -98,7 +107,6 @@ tr.data td {
 }
 
 .manipCont input[type='submit']:hover {
-  color: white;
   background: grey;
 }
 
@@ -123,12 +131,12 @@ table {
   text-align: center;
   border-spacing: 1em;
   table-layout: auto;
-  width: 100%;
+  width: 85vw;
 }
 
 #body {
   overflow-y: scroll;
-  max-height: 88vh;
+  height: 88vh;
 }
 
 .tblContainer th {
@@ -167,6 +175,18 @@ table {
   display: inline-block;
 }
 
+.tblContainer input[type='button'].visible:hover,
+.tblContainer input[type='submit'].visible:hover {
+  background-color: rgb(216, 216, 216);
+  cursor: pointer;
+}
+
+.tblContainer input[type='button'].visible:active,
+.tblContainer input[type='submit'].visible:active {
+  background-color: rgb(0, 0, 0);
+  color: rgb(255, 255, 255);
+}
+
 .tblContainer td.errorDetected,
 .tblContainer input[type='text'].errorDetected,
 .tblContainer select.errorDetected {
@@ -175,10 +195,21 @@ table {
 }
 
 #header input {
+  text-align: center;
   border: solid;
   border-radius: 0.2em;
   border-width: 0.1em;
   border-color: rgb(0, 0, 0);
   background-color: rgb(255, 255, 255);
-  margin: 0em 0.2em 0em 0.2em;
+  margin: 0.2em 0.2em 0.2em 0.2em;
+}
+
+#header input:hover {
+  cursor: pointer;
+  background-color: rgb(216, 216, 216);
+}
+
+#header input:active {
+  background-color: rgb(0, 0, 0);
+  color: rgb(255, 255, 255);
 }

@@ -56,6 +56,11 @@ class Header {
       'click',
       Table.renderTable.bind(Table, EmployeeManager.employeeList, true)
     );
+    inputSearch.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        Table.renderTable(EmployeeManager.employeeList, true);
+      }
+    });
     btnReset.addEventListener(
       'click',
       Table.renderTable.bind(Table, EmployeeManager.employeeList, false)
